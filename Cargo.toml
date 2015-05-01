@@ -1,0 +1,16 @@
+[package]
+
+name = "cd"
+version = "0.0.1"
+authors = ["adjivas <adjivas@users.noreply.github.com>"]
+description = "builtin-in of cd"
+license = "GNUv3"
+repository = "https://github.com/adjivas/cd"
+
+[lib]
+name = "cdlib"
+path = "src/lib.rs"
+
+[[bin]]
+name = "main"
+path = "src/bin.rs"
