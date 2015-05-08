@@ -8,6 +8,8 @@ This librairy is a systen's project for adds, sets or deletes variable's cdirone
 #### Example:
 ```shell
 $ cargo run
+src
+..
 ...
 ```
 

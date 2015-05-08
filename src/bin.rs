@@ -19,7 +19,7 @@ fn main() {
     };
     let out = match std::io::stdin().read_line(&mut line) {
       Ok(_) => {
-        cdlib::cd::interpreter(&line.chars().take_while(|x|
+        cdlib::cd::from_arg(&line.chars().take_while(|x|
           *x != '\n'
         ).collect())
       },
