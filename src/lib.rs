@@ -11,12 +11,22 @@ pub mod cd {
 
   /// The `set` function returns try to changes te current repertory.
   fn set (
-    dir: &String,
+    dir: &Path,
   ) -> Result<String, String> {
-    let root = Path::new(dir);
-
-    match env::set_current_dir(&root) {
-      Ok(_) => Ok("".to_string()),
+    match env::current_dir() {
+      Ok(ref pwd) => env::set_var("OLDPWD", pwd),
+      Err(_) => return Err("Please, checks your PWD variable\n".to_string()),
+    };
+    match env::set_current_dir(&dir) {
+      Ok(_) => {
+        match env::current_dir() {
+          Ok(ref pwd) => {
+            env::set_var("PWD", pwd);
+            Ok("".to_string())
+          },
+          Err(_) => panic!("PWD corrupted\n"),
+        }
+      },
       Err(why) => Err(why.to_string()),
     }
   }
@@ -24,29 +34,23 @@ pub mod cd {
   /// The `from_arg` function returns empty or error's text information.
   pub fn from_arg (
     dir: &String,
-  ) -> String {
-    let to:String = match dir {
-      d if d == "~" => match env::var("HOME") {
-        Ok(to) => to,
-        Err(_) => return "Please, checks your HOME variable".to_string(),
+  ) -> Result<String, String> {
+    match env::var("OLDPWD") {
+      Ok(old) => {
+        match dir {
+          d if d == "~" => match env::home_dir() {
+            Some(ref home) => set(home),
+            None => Err("Please, checks your HOME variable\n".to_string()),
+          },
+          d if d == "-" => set(Path::new(&old)),
+          _ => set(Path::new(dir)),
+        }
       },
-      d if d == "-" => match env::var("OLDPWD") {
-        Ok(to) => to,
-        Err(_) => return "Please, checks your HOME variable".to_string(),
-      },
-      _ => dir.clone(),
-    };
-
-    match set(&to) {
-      Ok(val) => val,
-      Err(mut why) => {
-        why.push_str("\n");
-        why
-      },
+      Err(_) => return Err("Please, checks your OLDPWD variable\n".to_string()),
     }
   }
 
-  /// The `from_arg` function returns empty or error's text information
+  /// The `from_args` function returns empty or error's text information
   /// for first problem encounter.
   pub fn from_args (
     dirs: &Vec<String>,
@@ -54,13 +58,9 @@ pub mod cd {
     let mut out:String = String::new();
 
     for dir in dirs {
-      match set(dir) {
+      match from_arg(dir) {
         Ok(val) => out.push_str(&val),
-        Err(mut why) => {
-          why.push_str("\n");
-
-          return why;
-        },
+        Err(why) => return why,
       }
     }
     out
