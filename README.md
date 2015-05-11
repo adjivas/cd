@@ -2,6 +2,7 @@ Change-Directory
 ================
 
 [![Build Status](https://travis-ci.org/adjivas/cd.svg)](https://travis-ci.org/adjivas/cd)
+[![GPLv3 License](http://img.shields.io/badge/license-GPLv3-blue.svg)](https://www.gnu.org/copyleft/gpl.html)
 
 This librairy is a systen's project for adds, sets or deletes variable's cdironement -cd-.
 
